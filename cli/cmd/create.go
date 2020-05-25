@@ -32,6 +32,7 @@ import (
 // CreateCommand for create experiment
 type CreateCommand struct {
 	baseCommand
+	// 命令服务层
 	*baseExpCommandService
 }
 
@@ -48,11 +49,15 @@ func (cc *CreateCommand) Init() {
 		Example: createExample(),
 	}
 	flags := cc.command.PersistentFlags()
+	// ./blade create cpu fullload
+	// uid是不是cpu?
 	flags.StringVar(&uid, UidFlag, "", "Set Uid for the experiment, adapt to docker")
 
 	cc.baseExpCommandService = newBaseExpCommandService(cc)
 }
 
+// 命令行参数 绑定函数
+// ExpFlagSpec 命令行参数描述
 func (cc *CreateCommand) bindFlagsFunction() func(commandFlags map[string]func() string, cmd *cobra.Command, specFlags []spec.ExpFlagSpec) {
 	return func(commandFlags map[string]func() string, cmd *cobra.Command, specFlags []spec.ExpFlagSpec) {
 		// set action flags
@@ -62,6 +67,7 @@ func (cc *CreateCommand) bindFlagsFunction() func(commandFlags map[string]func()
 			if flag.FlagRequired() {
 				flagDesc = fmt.Sprintf("%s (required)", flagDesc)
 			}
+			// 没有参数, 默认设置为false
 			if flag.FlagNoArgs() {
 				var key bool
 				cmd.PersistentFlags().BoolVar(&key, flagName, false, flagDesc)
@@ -84,6 +90,7 @@ func (cc *CreateCommand) bindFlagsFunction() func(commandFlags map[string]func()
 
 func (cc *CreateCommand) actionRunEFunc(target, scope string, actionCommand *actionCommand, actionCommandSpec spec.ExpActionCommandSpec) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
+		// 目标， 作用域， 操作指令， 指令描述
 		expModel := createExpModel(target, scope, actionCommandSpec.Name(), cmd)
 
 		// check timeout flag

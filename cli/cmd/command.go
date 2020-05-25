@@ -60,6 +60,7 @@ func (bc *baseCommand) Name() string {
 var ds data.SourceI
 
 // GetDS returns dataSource
+// 数据源, SourceI数据源接口
 func GetDS() data.SourceI {
 	if ds == nil {
 		ds = data.GetSource()
@@ -121,6 +122,7 @@ func (bc *baseCommand) generateUid() (string, error) {
 	if err != nil {
 		return "", err
 	}
+	// 查询实验数据模型
 	model, err := GetDS().QueryExperimentModelByUid(uid)
 	if err != nil {
 		return "", err

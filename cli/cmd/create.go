@@ -50,7 +50,6 @@ func (cc *CreateCommand) Init() {
 	}
 	flags := cc.command.PersistentFlags()
 	// ./blade create cpu fullload
-	// uid是不是cpu?
 	flags.StringVar(&uid, UidFlag, "", "Set Uid for the experiment, adapt to docker")
 
 	cc.baseExpCommandService = newBaseExpCommandService(cc)
@@ -88,12 +87,16 @@ func (cc *CreateCommand) bindFlagsFunction() func(commandFlags map[string]func()
 	}
 }
 
+// blade create cpu load
+// actionCommand === cpu
 func (cc *CreateCommand) actionRunEFunc(target, scope string, actionCommand *actionCommand, actionCommandSpec spec.ExpActionCommandSpec) func(cmd *cobra.Command, args []string) error {
 	return func(cmd *cobra.Command, args []string) error {
 		// 目标， 作用域， 操作指令， 指令描述
+		// 创建实验模型，把命令行参数保存到模型里面
 		expModel := createExpModel(target, scope, actionCommandSpec.Name(), cmd)
 
 		// check timeout flag
+		// 如果有超时参数
 		tt := expModel.ActionFlags["timeout"]
 		if tt != "" {
 			_, err := strconv.ParseUint(tt, 10, 64)

@@ -46,6 +46,7 @@ func (e *Executor) Exec(uid string, ctx context.Context, model *spec.ExpModel) *
 		return spec.ReturnFail(spec.Code[spec.HandlerNotFound], fmt.Sprintf("the os executor not found, %s", key))
 	}
 	executor.SetChannel(channel.NewLocalChannel())
+	// 特定执行器
 	return executor.Exec(uid, ctx, model)
 }
 

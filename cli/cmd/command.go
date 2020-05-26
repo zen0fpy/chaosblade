@@ -74,7 +74,10 @@ func SetDS(source data.SourceI) {
 }
 
 // recordExpModel
+
 func (bc *baseCommand) recordExpModel(commandPath string, expModel *spec.ExpModel) (commandModel *data.ExperimentModel, err error) {
+	// UidFlag == "uid"
+	// 如果没有uid，就创建uid, 实验结束销毁资源有到
 	uid := expModel.ActionFlags[UidFlag]
 	if uid == "" {
 		uid, err = bc.generateUid()
@@ -83,6 +86,7 @@ func (bc *baseCommand) recordExpModel(commandPath string, expModel *spec.ExpMode
 		}
 	}
 
+	// 过滤出只在匹配器的参数
 	flagsInline := spec.ConvertExpMatchersToString(expModel, func() map[string]spec.Empty {
 		return make(map[string]spec.Empty)
 	})
@@ -91,6 +95,8 @@ func (bc *baseCommand) recordExpModel(commandPath string, expModel *spec.ExpMode
 	if err != nil {
 		return nil, err
 	}
+
+	// 实验模型
 	commandModel = &data.ExperimentModel{
 		Uid:        uid,
 		Command:    command,
@@ -101,6 +107,7 @@ func (bc *baseCommand) recordExpModel(commandPath string, expModel *spec.ExpMode
 		CreateTime: time,
 		UpdateTime: time,
 	}
+	// 保存到数据库
 	err = GetDS().InsertExperimentModel(commandModel)
 	if err != nil {
 		return nil, err
